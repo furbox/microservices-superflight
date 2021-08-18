@@ -27,4 +27,13 @@ export class UserController {
   delete(@Payload() id: string) {
     return this.userService.delete(id);
   }
+  @MessagePattern(UserMSG.VALID_USER)
+  async validateUser(@Payload() payload: any) {
+    const user = await this.userService.findByUsername(payload.username);
+    const isValidPassword = await this.userService.creckPassword(
+      payload.password,
+      user.password,
+    );
+    return user && isValidPassword ? user : null;
+  }
 }
